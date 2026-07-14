@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conseil Syndical</title>
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#0b2545" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Belles Rives" />
+    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+    <link rel="icon" href="./assets/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section class="login-screen" id="loginScreen">
+      <form class="login-card" id="loginForm">
+        <div class="brand login-brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M4 20V9.5L12 4l8 5.5V20h-5v-6H9v6H4Z" />
+            </svg>
+          </div>
+          <div>
+            <strong>Conseil Syndical</strong>
+            <span>Espace réservé</span>
+          </div>
+        </div>
+        <div>
+          <p class="eyebrow">Connexion</p>
+          <h1>Accès à l'application</h1>
+        </div>
+        <label class="login-field">
+          <span>Identifiant</span>
+          <input id="loginUser" type="text" autocomplete="username" required />
+        </label>
+        <label class="login-field">
+          <span>Mot de passe</span>
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+        </label>
+        <label class="login-field">
+          <span>Profil</span>
+          <select id="loginProfile"></select>
+        </label>
+        <p class="login-error" id="loginError" role="alert"></p>
+        <button class="primary-action login-submit" type="submit">Se connecter</button>
+      </form>
+    </section>
+
+    <div class="app-shell locked" id="appShell">
+      <aside class="sidebar" aria-label="Navigation principale">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path d="M4 20V9.5L12 4l8 5.5V20h-5v-6H9v6H4Z" />
+            </svg>
+          </div>
+          <div>
+            <strong>Conseil Syndical</strong>
+            <span id="activeProfileLabel">Gestion de copropriété</span>
+          </div>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Replier le menu">
+          <span aria-hidden="true">‹</span>
+        </button>
+        <div class="nav-scroll-controls" aria-label="Navigation rapide du menu">
+          <button class="nav-arrow-button" id="navScrollUp" type="button" title="Remonter dans le menu">
+            <span aria-hidden="true">↑</span>
+          </button>
+          <button class="nav-arrow-button" id="navScrollDown" type="button" title="Descendre dans le menu">
+            <span aria-hidden="true">↓</span>
+          </button>
+        </div>
+        <nav class="nav-list" id="navList"></nav>
+        <button class="logout-nav-button" id="logoutMenuButton" type="button">
+          <span class="icon" data-icon="close"></span>
+          <span class="logout-label">Déconnexion</span>
+        </button>
+        <div class="save-status" id="saveStatus">Sauvegarde commune prête</div>
+        <div class="data-actions">
+          <button class="icon-button" id="exportData" type="button" title="Exporter les données">
+            <span class="icon" data-icon="download"></span>
+          </button>
+          <label class="icon-button file-button" title="Importer les données" data-admin-only="true">
+            <span class="icon" data-icon="upload"></span>
+            <input id="importData" type="file" accept="application/json" />
+          </label>
+          <button class="icon-button danger" id="resetData" type="button" title="Réinitialiser" data-admin-only="true">
+            <span class="icon" data-icon="trash"></span>
+          </button>
+          <button class="icon-button" id="logoutButton" type="button" title="Se déconnecter">
+            <span class="icon" data-icon="close"></span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Pilotage du conseil syndical</p>
+            <h1 id="viewTitle">Tableau de bord</h1>
+          </div>
+          <div class="top-actions">
+            <label class="author-control">
+              <span>Créateur</span>
+              <select id="activeAuthor"></select>
+            </label>
+            <button class="save-action" id="saveNowButton" type="button">
+              <span class="icon" data-icon="download"></span>
+              Sauvegarder
+            </button>
+            <button class="primary-action" id="quickAdd" type="button">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter
+            </button>
+          </div>
+        </header>
+
+        <section class="search-banner" aria-label="Recherche et filtres">
+          <label class="search-field">
+            <span>Recherche</span>
+            <input id="globalSearch" type="search" placeholder="Rechercher un sujet, un lieu, un membre, une facture..." />
+          </label>
+          <div class="search-filters">
+            <label class="building-filter">
+              <span>Bâtiment</span>
+              <select id="buildingFilter">
+                <option value="all">Tous</option>
+                <option value="Batiment A">A</option>
+                <option value="Batiment B">B</option>
+                <option value="Batiment C">C</option>
+                <option value="Batiment D">D</option>
+                <option value="Batiment E">E</option>
+              </select>
+            </label>
+            <label class="building-filter">
+              <span>Membre</span>
+              <select id="memberFilter">
+                <option value="all">Tous</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="page-save-strip" aria-label="Sauvegarde de la page">
+          <div>
+            <strong id="pageSaveTitle">Sauvegarder cet onglet</strong>
+            <span>Les modifications sont gardées automatiquement sur les profils de cette application.</span>
+          </div>
+          <button class="save-action" id="pageSaveButton" type="button">
+            <span class="icon" data-icon="download"></span>
+            Sauvegarder
+          </button>
+        </section>
+
+        <section class="global-task-strip" aria-label="Tâches visibles">
+          <div class="panel-header">
+            <h2>Tâches visibles</h2>
+            <button class="ghost-button compact-action" type="button" data-view-link="tasks">Tout voir</button>
+          </div>
+          <div class="current-task-list" id="currentTaskStrip"></div>
+        </section>
+
+        <section class="view active" id="dashboard">
+          <section class="executive-brief">
+            <div class="executive-copy">
+              <p class="eyebrow">Direction CS</p>
+              <h2>Conseil Syndical</h2>
+              <div class="mastery-score">
+                <span>Indice de maîtrise</span>
+                <strong id="masteryScore">0%</strong>
+              </div>
+            </div>
+            <div class="executive-status">
+              <button class="status-pill critical" type="button" data-view-link="urgencies">
+                <span>Urgences</span>
+                <strong id="executiveUrgenciesCount">0</strong>
+              </button>
+              <button class="status-pill warning" type="button" data-view-link="contracts">
+                <span>Préavis</span>
+                <strong id="executiveNoticeCount">0</strong>
+              </button>
+              <button class="status-pill calm" type="button" data-view-link="syndicRequests">
+                <span>Syndic</span>
+                <strong id="executiveSyndicCount">0</strong>
+              </button>
+            </div>
+          </section>
+
+          <section class="strategic-strip" aria-label="Synthèse stratégique">
+            <button class="strategic-card priority" type="button" id="strategicPriorityCard">
+              <span>Priorité absolue</span>
+              <strong id="strategicPriorityTitle">-</strong>
+              <small id="strategicPriorityMeta">Aucun point critique</small>
+            </button>
+            <button class="strategic-card deadline" type="button" id="strategicDeadlineCard">
+              <span>Prochaine échéance</span>
+              <strong id="strategicDeadlineTitle">-</strong>
+              <small id="strategicDeadlineMeta">Aucune échéance ouverte</small>
+            </button>
+            <button class="strategic-card budget" type="button" data-view-link="accounting">
+              <span>Budget à arbitrer</span>
+              <strong id="strategicBudgetTitle">0 EUR</strong>
+              <small id="strategicBudgetMeta">Aucune facture en attente</small>
+            </button>
+          </section>
+
+          <div class="quick-strip">
+            <button class="quick-tile" type="button" data-open-new="tasks">
+              <span class="icon" data-icon="plus"></span>
+              Nouvelle action
+            </button>
+            <button class="quick-tile" type="button" data-open-new="incidents">
+              <span class="icon" data-icon="alert"></span>
+              Nouveau signalement
+            </button>
+            <button class="quick-tile urgent-tile" type="button" data-open-urgent="incidents">
+              <span class="icon" data-icon="alert"></span>
+              Déclarer une urgence
+            </button>
+            <button class="quick-tile" type="button" data-open-new="meetings">
+              <span class="icon" data-icon="calendar"></span>
+              Nouvelle réunion
+            </button>
+            <button class="quick-tile" type="button" data-open-new="syndicRequests">
+              <span class="icon" data-icon="calendar"></span>
+              Demande au syndic
+            </button>
+          </div>
+
+          <div class="kpi-grid">
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="tasks">
+              <span>Actions ouvertes</span>
+              <strong id="openTasksCount">0</strong>
+            </article>
+            <article class="metric urgent-metric metric-link" role="button" tabindex="0" data-view-link="urgencies">
+              <span>Urgences</span>
+              <strong id="urgenciesCount">0</strong>
+            </article>
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="incidents">
+              <span>Signalements actifs</span>
+              <strong id="openIncidentsCount">0</strong>
+            </article>
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="syndicRequests">
+              <span>Demandes syndic ouvertes</span>
+              <strong id="openSyndicRequestsCount">0</strong>
+            </article>
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="contracts">
+              <span>Préavis à surveiller</span>
+              <strong id="contractNoticeCount">0</strong>
+            </article>
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="accounting">
+              <span>Budget engagé</span>
+              <strong id="budgetTotal">0 EUR</strong>
+            </article>
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="meetings">
+              <span>Prochaine réunion</span>
+              <strong id="nextMeetingDate">-</strong>
+            </article>
+            <article class="metric metric-link" role="button" tabindex="0" data-view-link="members">
+              <span>Membres du CS</span>
+              <strong id="membersCount">7</strong>
+            </article>
+          </div>
+
+          <section class="panel action-focus-panel">
+            <div class="panel-header">
+              <h2>À traiter maintenant</h2>
+              <span class="panel-count" id="nowCount">0</span>
+            </div>
+            <div class="action-focus-list" id="nowList"></div>
+          </section>
+
+          <section class="boardroom-grid">
+            <section class="panel decision-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Comité CS</p>
+                  <h2>Décisions à prendre</h2>
+                </div>
+                <span class="panel-count" id="decisionCount">0</span>
+              </div>
+              <div class="decision-list" id="decisionList"></div>
+            </section>
+            <section class="panel risk-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Lecture bâtiment</p>
+                  <h2>Matrice de vigilance</h2>
+                </div>
+                <button class="ghost-button compact-action" type="button" data-view-link="tasks">Piloter</button>
+              </div>
+              <div class="risk-grid" id="riskMatrix"></div>
+            </section>
+          </section>
+
+          <div class="dashboard-grid">
+            <section class="panel urgency-panel">
+              <div class="panel-header">
+                <h2>Urgences à traiter</h2>
+                <button class="ghost-button compact-action" type="button" data-view-link="urgencies">Voir l'onglet</button>
+                <span class="panel-count" id="urgentPreviewCount">0</span>
+              </div>
+              <div class="list" id="urgentPreviewList"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Priorités</h2>
+                <button class="ghost-button compact-action" type="button" data-view-link="tasks">Voir l'onglet</button>
+                <span class="panel-count" id="priorityCount">0</span>
+              </div>
+              <div class="list" id="priorityList"></div>
+            </section>
+            <section class="panel in-progress-panel">
+              <div class="panel-header">
+                <h2>En cours</h2>
+                <button class="ghost-button compact-action" type="button" data-view-link="tasks">Voir l'onglet</button>
+                <span class="panel-count" id="inProgressCount">0</span>
+              </div>
+              <div class="in-progress-grid" id="inProgressList"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Ordre du jour</h2>
+                <button class="ghost-button compact-action" type="button" data-view-link="meetings">Voir l'onglet</button>
+                <button class="ghost-button" id="printAgenda" type="button">
+                  <span class="icon" data-icon="print"></span>
+                  Imprimer
+                </button>
+              </div>
+              <div class="agenda-preview" id="agendaPreview"></div>
+            </section>
+          </div>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Suivi par bâtiment</h2>
+              <button class="ghost-button compact-action" type="button" data-view-link="tasks">Voir les tâches</button>
+              <span class="panel-count">5</span>
+            </div>
+            <div class="building-grid" id="buildingSummary"></div>
+          </section>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Tâches à accomplir par bâtiment</h2>
+              <button class="ghost-button compact-action" type="button" data-view-link="tasks">Voir l'onglet</button>
+              <span class="panel-count" id="buildingTasksCount">0</span>
+            </div>
+            <div class="building-task-grid" id="buildingTaskSummary"></div>
+          </section>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Équipe du conseil syndical</h2>
+              <button class="ghost-button compact-action" type="button" data-view-link="members">Voir l'onglet</button>
+              <span class="panel-count" id="teamCount">7</span>
+            </div>
+            <div class="team-grid" id="teamSummary"></div>
+          </section>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Tâches attitrées aux membres</h2>
+              <button class="ghost-button compact-action" type="button" data-view-link="tasks">Voir l'onglet</button>
+              <span class="panel-count" id="assignedTasksCount">0</span>
+            </div>
+            <div class="member-task-grid" id="memberTaskSummary"></div>
+          </section>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Demandes adressées au syndic</h2>
+              <button class="ghost-button compact-action" type="button" data-view-link="syndicRequests">Voir l'onglet</button>
+              <span class="panel-count" id="syndicSummaryCount">0</span>
+            </div>
+            <div class="request-grid" id="syndicRequestSummary"></div>
+          </section>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Contrats prestataires</h2>
+              <button class="ghost-button compact-action" type="button" data-view-link="contracts">Voir l'onglet</button>
+              <span class="panel-count" id="contractSummaryCount">0</span>
+            </div>
+            <div class="request-grid" id="contractSummary"></div>
+          </section>
+
+          <section class="panel building-panel">
+            <div class="panel-header">
+              <h2>Activité récente</h2>
+              <span class="panel-count" id="activityCount">0</span>
+            </div>
+            <div class="list" id="activityList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="meetings">
+          <div class="section-tools">
+            <input id="meetingSearch" type="search" placeholder="Rechercher une réunion" />
+            <button class="primary-action" type="button" data-open-new="meetings">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une réunion
+            </button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Titre</th>
+                  <th>Lieu</th>
+                  <th>Ordre du jour</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="meetingsTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="tasks">
+          <div class="section-tools">
+            <select id="taskFilter">
+              <option value="all">Toutes les actions</option>
+              <option value="open">Ouvertes</option>
+              <option value="done">Terminées</option>
+            </select>
+            <button class="primary-action" type="button" data-open-new="tasks">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une tâche
+            </button>
+          </div>
+          <div class="task-help">
+            Les actions sont regroupées par bâtiment. Les sujets généraux restent dans la colonne Tous.
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Documents liés aux actions</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Autre">Ajouter un fichier</button>
+            </div>
+            <div class="document-mini-list" id="taskDocumentPreview"></div>
+          </section>
+          <div class="kanban" id="taskBoard"></div>
+        </section>
+
+        <section class="view" id="urgencies">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-urgent="tasks">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une action urgente
+            </button>
+            <button class="primary-action" type="button" data-open-urgent="incidents">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter un signalement
+            </button>
+          </div>
+          <div class="task-help">
+            Les urgences regroupent les signalements urgents et les actions en priorité haute.
+          </div>
+          <div class="urgency-legend" aria-label="Codes couleurs des urgences">
+            <span><i class="legend-dot critical"></i> Urgent</span>
+            <span><i class="legend-dot medium"></i> En cours</span>
+            <span><i class="legend-dot low"></i> Faible</span>
+            <span><i class="legend-dot done"></i> Terminé</span>
+          </div>
+          <div class="urgency-board" id="urgencyBoard"></div>
+        </section>
+
+        <section class="view" id="members">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="members" data-admin-only="true">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter un membre
+            </button>
+          </div>
+          <div class="cards-grid" id="memberCards"></div>
+        </section>
+
+        <section class="view" id="incidents">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="incidents">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter un signalement
+            </button>
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Photos et preuves</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Photo">Ajouter une photo</button>
+            </div>
+            <div class="document-mini-list" id="incidentDocumentPreview"></div>
+          </section>
+          <div class="cards-grid" id="incidentCards"></div>
+        </section>
+
+        <section class="view" id="syndicRequests">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="syndicRequests">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une demande syndic
+            </button>
+          </div>
+          <div class="task-help">
+            Suivi des demandes envoyées au syndic, du délai de traitement et du nombre de relances.
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Courriers et justificatifs</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Courrier">Ajouter un courrier</button>
+            </div>
+            <div class="document-mini-list" id="syndicDocumentPreview"></div>
+          </section>
+          <div class="cards-grid" id="syndicRequestCards"></div>
+        </section>
+
+        <section class="view" id="budget">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="budget">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une dépense prévue
+            </button>
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Devis et justificatifs</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Devis">Ajouter un devis</button>
+            </div>
+            <div class="document-mini-list" id="budgetDocumentPreview"></div>
+          </section>
+          <div class="budget-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Postes suivis</h2>
+                <span class="panel-count" id="budgetCount">0</span>
+              </div>
+              <div id="budgetRows" class="budget-rows"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Répartition</h2>
+              </div>
+              <div class="bars" id="budgetBars"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="invoices">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="invoices">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une facture
+            </button>
+          </div>
+          <div class="task-help">
+            Suivi des factures reçues, des montants engagés, des échéances et du statut de paiement.
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Factures déposées</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Facture">Ajouter une facture</button>
+            </div>
+            <div class="document-mini-list" id="invoiceDocumentPreview"></div>
+          </section>
+          <div class="cards-grid" id="invoiceCards"></div>
+        </section>
+
+        <section class="view" id="documents">
+          <section class="panel document-upload-panel">
+            <div class="panel-header">
+              <h2>Ajouter une photo, vidéo ou fichier</h2>
+            </div>
+            <form class="document-upload-form" id="documentUploadForm">
+              <label class="file-drop">
+                <span>Fichier</span>
+                <input id="documentFile" type="file" accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.csv" required />
+              </label>
+              <label>
+                <span>Intitulé</span>
+                <input id="documentTitle" type="text" placeholder="Ex. Fuite parking, facture nettoyage..." />
+              </label>
+              <label>
+                <span>Type</span>
+                <select id="documentCategory">
+                  <option>Photo</option>
+                  <option>Vidéo</option>
+                  <option>Facture</option>
+                  <option>Devis</option>
+                  <option>Contrat</option>
+                  <option>Courrier</option>
+                  <option>Fichier</option>
+                  <option>Autre</option>
+                </select>
+              </label>
+              <label>
+                <span>Bâtiment</span>
+                <select id="documentBuilding">
+                  <option value="Tous les batiments">Tous les bâtiments</option>
+                  <option value="Batiment A">Bâtiment A</option>
+                  <option value="Batiment B">Bâtiment B</option>
+                  <option value="Batiment C">Bâtiment C</option>
+                  <option value="Batiment D">Bâtiment D</option>
+                  <option value="Batiment E">Bâtiment E</option>
+                </select>
+              </label>
+              <label class="full">
+                <span>Notes</span>
+                <textarea id="documentNotes" placeholder="Commentaire, lien avec une demande, précision utile..."></textarea>
+              </label>
+              <button class="primary-action" type="submit">Ajouter le document</button>
+            </form>
+          </section>
+          <div class="cards-grid" id="documentCards"></div>
+        </section>
+
+        <section class="view" id="accounting">
+          <section class="accounting-command">
+            <div>
+              <p class="eyebrow">Cabinet comptable</p>
+              <h2>Contrôle financier de la copropriété</h2>
+              <form class="treasury-form" id="treasuryForm">
+                <label>
+                  <span>Trésorerie syndic déclarée</span>
+                  <input id="treasuryDeclaredInput" type="number" step="0.01" placeholder="0" />
+                </label>
+                <label>
+                  <span>Date du solde</span>
+                  <input id="treasuryDateInput" type="date" />
+                </label>
+                <button class="save-action" type="submit">Actualiser</button>
+              </form>
+            </div>
+            <div class="accounting-command-grid">
+              <article>
+                <span>Exécution budget</span>
+                <strong id="accountExecutionRate">0%</strong>
+              </article>
+              <article>
+                <span>Disponible</span>
+                <strong id="accountAvailableTotal">0 EUR</strong>
+              </article>
+              <article>
+                <span>En retard</span>
+                <strong id="accountLateTotal">0 EUR</strong>
+              </article>
+              <article>
+                <span>Contesté</span>
+                <strong id="accountDisputedTotal">0 EUR</strong>
+              </article>
+              <article>
+                <span>Trésorerie syndic</span>
+                <strong id="accountTreasuryDeclared">0 EUR</strong>
+              </article>
+              <article>
+                <span>Solde projeté</span>
+                <strong id="accountProjectedTreasury">0 EUR</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel accounting-entry-panel">
+            <div class="panel-header">
+              <h2>Ajouter une facture</h2>
+            </div>
+            <form class="quick-entry-form" id="accountingInvoiceForm">
+              <label>
+                <span>Intitulé</span>
+                <input id="accountingInvoiceLabel" type="text" placeholder="Ex. Entretien ascenseur" required />
+              </label>
+              <label>
+                <span>Montant EUR</span>
+                <input id="accountingInvoiceAmount" type="number" min="0" step="0.01" placeholder="0" required />
+              </label>
+              <label>
+                <span>Statut</span>
+                <select id="accountingInvoiceStatus">
+                  <option value="A payer">À payer</option>
+                  <option value="En verification">En vérification</option>
+                  <option value="Payee">Payée</option>
+                  <option value="Contestee">Contestée</option>
+                </select>
+              </label>
+              <button class="primary-action" type="submit">Ajouter</button>
+            </form>
+          </section>
+          <div class="accounting-summary">
+            <article class="metric">
+              <span>Budget prévu</span>
+              <strong id="accountBudgetTotal">0 EUR</strong>
+            </article>
+            <article class="metric">
+              <span>Factures saisies</span>
+              <strong id="accountInvoiceTotal">0 EUR</strong>
+            </article>
+            <article class="metric">
+              <span>Déjà payé</span>
+              <strong id="accountPaidTotal">0 EUR</strong>
+            </article>
+            <article class="metric urgent-metric">
+              <span>Reste à payer</span>
+              <strong id="accountPendingTotal">0 EUR</strong>
+            </article>
+            <article class="metric">
+              <span>Ecart budget</span>
+              <strong id="accountRemainingTotal">0 EUR</strong>
+            </article>
+          </div>
+          <section class="panel accountant-graph-panel">
+            <div class="panel-header">
+              <h2>Graphique financier</h2>
+              <span class="panel-count" id="accountGraphRate">0%</span>
+            </div>
+            <div class="account-graph-layout">
+              <div class="account-donut" id="accountDonut" role="img" aria-label="Répartition comptable">
+                <div>
+                  <strong id="accountDonutTotal">0 EUR</strong>
+                  <span>Total saisi</span>
+                </div>
+              </div>
+              <div class="account-legend" id="accountLegend"></div>
+            </div>
+          </section>
+          <div class="accounting-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Dépenses par catégorie</h2>
+              </div>
+              <div class="bars" id="accountCategoryBars"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Dépenses par bâtiment</h2>
+              </div>
+              <div class="bars" id="accountBuildingBars"></div>
+            </section>
+            <section class="panel accountant-control-panel">
+              <div class="panel-header">
+                <h2>Lecture expert-comptable</h2>
+                <span class="panel-count" id="accountControlCount">0</span>
+              </div>
+              <div class="account-control-list" id="accountControlList"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Factures à suivre</h2>
+                <span class="panel-count" id="accountInvoiceCount">0</span>
+              </div>
+              <div class="accounting-total-line">
+                <span>Total des factures</span>
+                <strong id="accountInvoiceListTotal">0 EUR</strong>
+              </div>
+              <div class="list" id="accountInvoiceList"></div>
+            </section>
+          </div>
+
+          <nav class="acc-subnav" aria-label="Sous-modules comptabilité">
+            <button class="acc-subnav-btn active" type="button" data-acc-tab="controls">Contrôle factures</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="contractsAlerts">Contrats &amp; échéances</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="quotes">Devis</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="arrears">Impayés</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="fundCalls">Appels de fonds</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="worksFund">Fonds travaux (ALUR)</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="analysis">Analyse &amp; audit</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="forecast">Trésorerie prévisionnelle</button>
+            <button class="acc-subnav-btn" type="button" data-acc-tab="exports">Rapports &amp; exports</button>
+          </nav>
+
+          <section class="acc-panel active" data-acc-panel="controls">
+            <div class="task-help">
+              Contrôle automatique des factures : doublons, dépassements de devis, factures sans devis ni bon
+              d'intervention, prestataires non référencés dans les contrats, dépassement budgétaire.
+            </div>
+            <div class="list" id="invoiceAuditList"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="contractsAlerts">
+            <div class="task-help">
+              Alertes automatiques sur les contrats arrivant à échéance (90 / 60 / 30 jours).
+            </div>
+            <div class="list" id="contractAlertList"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="quotes">
+            <div class="section-tools">
+              <button class="primary-action" type="button" data-open-new="quotes">
+                <span class="icon" data-icon="plus"></span>
+                Ajouter un devis
+              </button>
+            </div>
+            <div class="task-help">
+              Les devis partageant le même "Groupe de comparaison" sont comparés automatiquement (écart en € et en %).
+            </div>
+            <div class="list" id="quotesComparisonList"></div>
+            <div class="cards-grid" id="quotesList"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="arrears">
+            <div class="section-tools">
+              <button class="primary-action" type="button" data-open-new="arrears">
+                <span class="icon" data-icon="plus"></span>
+                Signaler un impayé
+              </button>
+            </div>
+            <div class="accounting-summary" id="arrearsSummary"></div>
+            <div class="cards-grid" id="arrearsList"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="fundCalls">
+            <div class="section-tools">
+              <button class="primary-action" type="button" data-open-new="fundCalls">
+                <span class="icon" data-icon="plus"></span>
+                Ajouter un appel de fonds
+              </button>
+            </div>
+            <div class="cards-grid" id="fundCallsList"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="worksFund">
+            <div class="section-tools">
+              <button class="primary-action" type="button" data-open-new="worksFundMovements">
+                <span class="icon" data-icon="plus"></span>
+                Ajouter un mouvement
+              </button>
+            </div>
+            <div class="accounting-summary" id="worksFundSummary"></div>
+            <div class="list" id="worksFundList"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="analysis">
+            <div class="task-help">
+              Comparatif des charges sur les 3 derniers exercices connus, et score de conformité du syndic
+              (dépenses sans devis, hors budget, contrats échus...).
+            </div>
+            <div class="accounting-summary" id="syndicAuditSummary"></div>
+            <div class="bars" id="chargeAnalysisBars"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="forecast">
+            <div class="task-help">
+              Projection de trésorerie basée sur le solde déclaré, les factures en attente et les contrats récurrents.
+            </div>
+            <div class="accounting-summary" id="treasuryForecastSummary"></div>
+          </section>
+
+          <section class="acc-panel" data-acc-panel="exports">
+            <div class="task-help">
+              Exports pour l'Assemblée Générale et le suivi comptable. Le format Excel est généré en CSV
+              (compatible Excel/LibreOffice/Google Sheets). Le rapport PDF utilise l'impression du navigateur.
+            </div>
+            <div class="export-actions">
+              <button class="ghost-button" type="button" id="exportInvoicesCsv">Export CSV - Factures</button>
+              <button class="ghost-button" type="button" id="exportArrearsCsv">Export CSV - Impayés</button>
+              <button class="ghost-button" type="button" id="exportBudgetCsv">Export CSV - Budget</button>
+              <button class="ghost-button" type="button" id="exportAuditLogCsv">Export CSV - Journal d'audit</button>
+              <button class="primary-action" type="button" id="printAgReport">Générer le rapport AG (PDF)</button>
+            </div>
+            <div class="task-help">
+              Journal d'audit : chaque ajout, modification ou suppression est horodaté et attribué automatiquement.
+            </div>
+            <div class="list" id="auditLogList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="contracts">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="contracts">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter un prestataire
+            </button>
+          </div>
+          <div class="task-help">
+            Suivi des dates de fin de contrat et des préavis de rupture à adresser aux prestataires.
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Contrats, préavis et devis</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Contrat">Ajouter un contrat</button>
+            </div>
+            <div class="document-mini-list" id="contractDocumentPreview"></div>
+          </section>
+          <div class="cards-grid" id="contractCards"></div>
+        </section>
+
+        <section class="view" id="procedures">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="procedures">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter une marche à suivre
+            </button>
+          </div>
+          <div class="task-help">
+            Marches à suivre récurrentes pour les demandes saisonnières, les contrôles et les transmissions au syndic.
+          </div>
+          <section class="panel document-hub">
+            <div class="panel-header">
+              <h2>Documents de procédure</h2>
+              <button class="ghost-button compact-action" type="button" data-document-preset="Courrier">Ajouter un document</button>
+            </div>
+            <div class="document-mini-list" id="procedureDocumentPreview"></div>
+          </section>
+          <div class="cards-grid" id="procedureCards"></div>
+        </section>
+
+        <section class="view" id="contacts">
+          <div class="section-tools">
+            <button class="primary-action" type="button" data-open-new="contacts">
+              <span class="icon" data-icon="plus"></span>
+              Ajouter un contact
+            </button>
+          </div>
+          <div class="cards-grid" id="contactCards"></div>
+        </section>
+
+        <section class="view" id="settings">
+          <div class="settings-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Onglets de l'application</h2>
+                <button class="ghost-button" id="resetTabs" type="button">Rétablir</button>
+              </div>
+              <div class="tab-settings-list" id="tabSettingsList"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Aperçu</h2>
+              </div>
+              <div class="list" id="tabPreviewList"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Sécurité</h2>
+              </div>
+              <form class="security-form" id="passwordForm">
+                <label class="login-field">
+                  <span>Mot de passe actuel</span>
+                  <input id="currentPassword" type="password" autocomplete="current-password" required />
+                </label>
+                <label class="login-field">
+                  <span>Nouveau mot de passe</span>
+                  <input id="newPassword" type="password" autocomplete="new-password" minlength="4" required />
+                </label>
+                <label class="login-field">
+                  <span>Confirmation</span>
+                  <input id="confirmPassword" type="password" autocomplete="new-password" minlength="4" required />
+                </label>
+                <p class="login-error" id="passwordMessage" role="alert"></p>
+                <button class="primary-action" type="submit">Changer le mot de passe</button>
+              </form>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="itemDialog">
+      <form method="dialog" class="dialog-form" id="itemForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow" id="dialogEyebrow">Nouvel element</p>
+            <h2 id="dialogTitle">Ajouter</h2>
+          </div>
+          <button class="icon-button" type="button" title="Fermer" data-close-dialog>
+            <span class="icon" data-icon="close"></span>
+          </button>
+        </div>
+        <div class="form-grid" id="formFields"></div>
+        <div class="dialog-actions">
+          <button class="danger-action hidden" id="deleteCurrentItem" type="button" data-delete-current>
+            <span class="icon" data-icon="delete"></span>
+            Supprimer
+          </button>
+          <button class="ghost-button" type="button" data-close-dialog>Annuler</button>
+          <button class="primary-action" id="saveItem" value="default" type="submit">Enregistrer</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="agReportPrint"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
