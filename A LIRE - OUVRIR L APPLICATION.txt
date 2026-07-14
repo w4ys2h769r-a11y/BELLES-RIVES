@@ -1,0 +1,54 @@
+COMMENT OUVRIR L'APPLICATION
+
+1. Dezipper le fichier ZIP.
+2. Ouvrir le dossier "conseil-syndical-a-envoyer".
+3. Double-cliquer sur "index.html".
+
+Identifiant : cs
+Mot de passe initial : copro
+
+Profil Administrateur : Beïja (seul profil pouvant ajouter/modifier/supprimer un membre,
+importer des données, réinitialiser l'application, ou modifier/supprimer une écriture
+comptable - facture, devis, impayé, appel de fonds, fonds travaux, contrat). Les autres
+profils ont un accès "Membre Conseil Syndical" : ils peuvent tout consulter et SAISIR de
+nouvelles données (y compris comptables), mais pas modifier/supprimer une écriture existante.
+
+ONGLETS PERSONNALISABLES :
+Dans "Réglages", vous pouvez : renommer un onglet, le réordonner (flèches), l'afficher/masquer,
+le retirer du menu (bouton rouge - les données restent conservées et l'onglet peut être
+rétabli en le réaffichant), ou créer un tout nouvel onglet libre (titre + bâtiment + statut +
+description + pièce jointe). Un onglet personnalisé supprimé (bouton rouge) l'est
+définitivement, avec ses données - une confirmation est demandée avant suppression.
+
+MODULE COMPTABILITÉ :
+Dans l'onglet "Comptabilité", des sous-onglets donnent accès à : contrôle automatique des
+factures (doublons, dépassement de devis, pièce justificative manquante, prestataire non
+référencé, dépassement budgétaire), alertes d'échéance des contrats (90/60/30 jours), devis
+avec comparatif automatique (regrouper des devis via le même "Groupe de comparaison"),
+impayés copropriétaires, appels de fonds, fonds travaux (loi ALUR), analyse des charges sur
+3 exercices avec score de conformité du syndic, trésorerie prévisionnelle (3/6/12 mois), et
+enfin les exports (CSV compatible Excel, rapport d'Assemblée Générale en PDF via impression)
+ainsi que le journal d'audit qui trace automatiquement chaque création/modification/suppression.
+
+IMPORTANT - Stockage des donnees :
+Les donnees sont stockees dans le navigateur (localStorage), pas sur un serveur.
+Cela signifie concretement :
+- Deux personnes sur deux ordinateurs/telephones DIFFERENTS ne voient PAS les memes
+  donnees en temps reel. Chacun a sa propre copie locale dans son navigateur.
+- Plusieurs profils ouverts dans le MEME navigateur (meme ordinateur) partagent bien
+  la meme sauvegarde.
+- Pensez a utiliser le bouton "Exporter" regulierement pour sauvegarder une copie du
+  fichier de donnees, et "Importer" pour la restaurer ou la transferer a quelqu'un d'autre.
+- Pour une vraie synchronisation en temps reel entre plusieurs appareils, il faudrait
+  heberger l'application avec une base de donnees partagee (ex. Firebase/Supabase) -
+  ce n'est pas le cas de cette version statique.
+
+INSTALLATION SUR TELEPHONE (PWA) :
+Pour installer l'application sur l'ecran d'accueil et l'utiliser hors connexion, elle
+DOIT etre hebergee en ligne (GitHub Pages, Netlify...) et ouverte via une adresse
+https://. Ouverte en double-cliquant sur index.html en local (adresse file://), le
+mode hors ligne et l'installation ne fonctionnent pas : c'est une limitation normale
+des navigateurs, pas un bug de l'application.
+- Sur iPhone (Safari) : ouvrir le lien, appuyer sur Partager > "Sur l'ecran d'accueil".
+- Sur Android (Chrome) : ouvrir le lien, menu ⋮ > "Ajouter a l'ecran d'accueil" ou
+  bandeau d'installation automatique.
